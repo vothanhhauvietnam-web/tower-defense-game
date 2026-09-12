@@ -23,7 +23,7 @@
 
         .game-wrapper {
             width: 100%;
-            max-width: 900px;
+            max-width: 1100px;
         }
 
         .game-header {
@@ -51,36 +51,109 @@
             border-radius: 0 0 10px 10px;
             overflow: hidden;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            display: flex;
+            min-height: 650px;
+        }
+
+        .left-panel {
+            width: 120px;
+            background: #2c3e50;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            border-right: 2px solid #34495e;
+        }
+
+        .mana-section {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .mana-label {
+            font-size: 11px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .mana-value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .missile-section {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+        }
+
+        .missile-btn {
+            width: 100%;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 10px;
+            transition: all 0.3s;
+            margin-top: 8px;
+        }
+
+        .missile-btn:hover {
+            background: white;
+            color: #e74c3c;
+            transform: scale(1.05);
+        }
+
+        .missile-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .game-area {
+            flex: 1;
+            background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 100%);
+            position: relative;
+            overflow: hidden;
         }
 
         canvas {
             display: block;
-            background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 100%);
             width: 100%;
-            height: 600px;
+            height: 100%;
         }
 
         .game-footer {
             background: #2c3e50;
-            padding: 20px;
+            padding: 15px;
             display: flex;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
             flex-wrap: wrap;
+            border-top: 2px solid #34495e;
         }
 
         .card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: 2px solid white;
             border-radius: 8px;
-            padding: 10px 15px;
+            padding: 8px 12px;
             color: white;
             cursor: pointer;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 11px;
             text-align: center;
             transition: all 0.3s;
-            min-width: 80px;
+            min-width: 75px;
             position: relative;
             overflow: hidden;
         }
@@ -95,44 +168,28 @@
             cursor: not-allowed;
         }
 
-        .card-cooldown {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .card-cooldown-bar {
-            height: 100%;
-            background: #FFD700;
-            width: 0%;
-            transition: width 0.1s linear;
-        }
-
         .card-name {
             display: block;
-            font-size: 12px;
-            margin-bottom: 3px;
+            font-size: 11px;
+            margin-bottom: 2px;
         }
 
         .card-cost {
             display: inline-block;
             background: #FF6B6B;
-            padding: 2px 6px;
+            padding: 2px 5px;
             border-radius: 3px;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: bold;
         }
 
         .stats-panel {
             background: #34495e;
             color: white;
-            padding: 15px;
+            padding: 12px 15px;
             display: flex;
             justify-content: space-around;
-            gap: 20px;
+            gap: 15px;
         }
 
         .stat {
@@ -140,12 +197,12 @@
         }
 
         .stat-label {
-            font-size: 12px;
+            font-size: 11px;
             opacity: 0.8;
         }
 
         .stat-value {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
         }
 
@@ -207,15 +264,6 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 15px rgba(102, 126, 234, 0.4);
         }
-
-        .mana-indicator {
-            background: #3498db;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 5px;
-            font-weight: bold;
-            font-size: 14px;
-        }
     </style>
 </head>
 <body>
@@ -230,9 +278,6 @@
                 <div class="stat-label">🐧 Your Tower</div>
                 <div class="stat-value" id="playerHP">100</div>
             </div>
-            <div class="stat mana-indicator" id="manaDisplay">
-                💎 Mana: 10 / 10
-            </div>
             <div class="stat">
                 <div class="stat-label">🍄 Enemy Tower</div>
                 <div class="stat-value" id="enemyHP">100</div>
@@ -240,7 +285,27 @@
         </div>
 
         <div class="game-container">
-            <canvas id="gameCanvas" width="900" height="600"></canvas>
+            <div class="left-panel">
+                <div class="mana-section">
+                    <div class="mana-label">💎 MANA</div>
+                    <div class="mana-value" id="manaValue">10</div>
+                </div>
+                <div class="missile-section">
+                    <div class="mana-label">🎯 MISSILE</div>
+                    <button class="missile-btn" id="missileBtn" onclick="spawnPlayerUnit(5)">Fire</button>
+                </div>
+            </div>
+
+            <div class="game-area">
+                <canvas id="gameCanvas"></canvas>
+            </div>
+        </div>
+
+        <div class="stats-panel" style="justify-content: center; gap: 30px;">
+            <div style="text-align: center;">
+                <div style="font-size: 12px; opacity: 0.8;">Units in Field</div>
+                <div style="font-size: 20px; font-weight: bold;" id="unitCount">0</div>
+            </div>
         </div>
 
         <div class="game-footer" id="cardContainer">
@@ -260,6 +325,10 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
+        // Set canvas size
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+
         // Game Variables
         let game = {
             playerHP: 100,
@@ -277,7 +346,7 @@
         let projectiles = [];
         let manaRegenTimer = 0;
 
-        // Unit Types
+        // Unit Types with colors
         const unitTypes = {
             1: {
                 name: '🐧 Penguin',
@@ -287,8 +356,7 @@
                 speed: 2,
                 range: 0,
                 attackSpeed: 1,
-                color: '#003366',
-                emoji: '🐧'
+                color: '#003366'
             },
             2: {
                 name: '🔴 Slime',
@@ -298,8 +366,7 @@
                 speed: 1.5,
                 range: 0,
                 attackSpeed: 1,
-                color: '#FF6347',
-                emoji: '🔴'
+                color: '#3498db'
             },
             3: {
                 name: '🗡️ Knight',
@@ -309,8 +376,7 @@
                 speed: 1.5,
                 range: 0,
                 attackSpeed: 1.2,
-                color: '#FFD700',
-                emoji: '🗡️'
+                color: '#FFD700'
             },
             4: {
                 name: '🏹 Archer',
@@ -320,8 +386,7 @@
                 speed: 2,
                 range: 150,
                 attackSpeed: 1.5,
-                color: '#228B22',
-                emoji: '🏹'
+                color: '#228B22'
             },
             5: {
                 name: '🎯 Missile',
@@ -332,12 +397,11 @@
                 range: 0,
                 attackSpeed: 0,
                 color: '#FF0000',
-                emoji: '🎯',
                 special: 'missile'
             }
         };
 
-        // Enemy Unit Types (Simpler AI)
+        // Enemy Unit Types
         const enemyUnitTypes = {
             1: {
                 name: '⚔️ Warrior',
@@ -346,8 +410,7 @@
                 speed: 2,
                 range: 0,
                 attackSpeed: 1,
-                color: '#DC143C',
-                emoji: '⚔️'
+                color: '#DC143C'
             },
             2: {
                 name: '👹 Orc',
@@ -356,31 +419,76 @@
                 speed: 1.2,
                 range: 0,
                 attackSpeed: 1.2,
-                color: '#2F4F4F',
-                emoji: '👹'
+                color: '#8B0000'
             }
         };
 
         // Towers
         const playerTower = {
-            x: 80,
-            y: 300,
+            x: 30,
+            y: canvas.height / 2,
             hp: 100,
             maxHP: 100,
-            width: 60,
-            height: 80,
-            color: '#003366'
+            width: 40,
+            height: 100,
+            color: '#27ae60'
         };
 
         const enemyTower = {
-            x: 820,
-            y: 300,
+            x: canvas.width - 30,
+            y: canvas.height / 2,
             hp: 100,
             maxHP: 100,
-            width: 60,
-            height: 80,
-            color: '#FF6347'
+            width: 40,
+            height: 100,
+            color: '#e74c3c'
         };
+
+        // Draw background with grass and decorations
+        function drawBackground() {
+            // Sky
+            ctx.fillStyle = 'linear-gradient(180deg, #87CEEB 0%, #E0F6FF 100%)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Grass
+            ctx.fillStyle = '#7cb342';
+            ctx.fillRect(0, canvas.height - 120, canvas.width, 120);
+
+            // Draw trees
+            const treePositions = [
+                { x: 150, y: 100 },
+                { x: 350, y: 80 },
+                { x: canvas.width - 150, y: 100 },
+                { x: canvas.width - 350, y: 80 }
+            ];
+
+            treePositions.forEach(pos => {
+                // Trunk
+                ctx.fillStyle = '#8B4513';
+                ctx.fillRect(pos.x - 8, pos.y + 20, 16, 40);
+                // Crown
+                ctx.fillStyle = '#228B22';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 25, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Draw flowers
+            const flowers = [
+                { x: 100, y: canvas.height - 60, color: '#FF69B4' },
+                { x: 250, y: canvas.height - 50, color: '#FF1493' },
+                { x: canvas.width - 100, y: canvas.height - 60, color: '#FF69B4' },
+                { x: canvas.width - 250, y: canvas.height - 50, color: '#FF1493' },
+                { x: 500, y: canvas.height - 40, color: '#FFD700' }
+            ];
+
+            flowers.forEach(flower => {
+                ctx.fillStyle = flower.color;
+                ctx.beginPath();
+                ctx.arc(flower.x, flower.y, 5, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
 
         // Unit Class
         class Unit {
@@ -413,7 +521,6 @@
                     return closest;
                 }
 
-                // Target tower if no units
                 const towerDist = Math.hypot(this.targetTower.x - this.x, this.targetTower.y - this.y);
                 if (towerDist < 300) {
                     return this.targetTower;
@@ -425,7 +532,6 @@
             update() {
                 this.attackCooldown--;
 
-                // Find target
                 if (!this.target || this.target.hp <= 0) {
                     this.target = this.findTarget();
                 }
@@ -434,14 +540,12 @@
                     const dist = Math.hypot(this.target.x - this.x, this.target.y - this.y);
 
                     if (this.type.range > 0) {
-                        // Ranged unit
                         if (dist < this.type.range) {
                             this.attack();
                         } else {
                             this.moveTo(this.target.x, this.target.y);
                         }
                     } else {
-                        // Melee unit
                         if (dist > 20) {
                             this.moveTo(this.target.x, this.target.y);
                         } else {
@@ -449,7 +553,6 @@
                         }
                     }
                 } else {
-                    // Move to tower
                     this.moveTo(this.targetTower.x, this.targetTower.y);
                 }
             }
@@ -469,7 +572,6 @@
                 if (this.attackCooldown > 0) return;
 
                 if (this.type.range > 0) {
-                    // Ranged attack
                     projectiles.push({
                         x: this.x,
                         y: this.y,
@@ -479,11 +581,9 @@
                         attacker: this
                     });
                 } else {
-                    // Melee attack
                     if (this.target.hp !== undefined) {
                         this.target.hp -= this.type.damage;
                     } else {
-                        // Attacking tower
                         if (this.isPlayer) {
                             game.enemyHP -= this.type.damage;
                         } else {
@@ -496,58 +596,99 @@
             }
 
             draw() {
-                // Draw unit
+                // Draw colored circle
                 ctx.fillStyle = this.type.color;
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, 12, 0, Math.PI * 2);
+                ctx.arc(this.x, this.y, 15, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Draw emoji
-                ctx.font = 'bold 16px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(this.type.emoji, this.x, this.y);
+                // Border
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
 
-                // Draw HP bar
+                // HP bar
                 ctx.fillStyle = '#00FF00';
-                ctx.fillRect(this.x - 15, this.y - 25, (this.hp / this.maxHP) * 30, 4);
+                ctx.fillRect(this.x - 20, this.y - 30, (this.hp / this.maxHP) * 40, 4);
                 ctx.strokeStyle = '#000';
                 ctx.lineWidth = 1;
-                ctx.strokeRect(this.x - 15, this.y - 25, 30, 4);
+                ctx.strokeRect(this.x - 20, this.y - 30, 40, 4);
             }
         }
 
         // Draw Towers
         function drawTowers() {
-            // Player Tower
+            // Player Tower (Green)
             ctx.fillStyle = playerTower.color;
-            ctx.fillRect(playerTower.x - 30, playerTower.y - 40, 60, 80);
-            ctx.font = 'bold 24px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('🐧', playerTower.x, playerTower.y - 10);
+            ctx.fillRect(
+                playerTower.x - playerTower.width / 2,
+                playerTower.y - playerTower.height / 2,
+                playerTower.width,
+                playerTower.height
+            );
 
-            // Tower HP bar
+            // Tower border
+            ctx.strokeStyle = '#27ae60';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(
+                playerTower.x - playerTower.width / 2,
+                playerTower.y - playerTower.height / 2,
+                playerTower.width,
+                playerTower.height
+            );
+
+            // Player Tower HP bar
             ctx.fillStyle = '#00FF00';
-            ctx.fillRect(playerTower.x - 30, playerTower.y - 50, (game.playerHP / 100) * 60, 6);
+            ctx.fillRect(
+                playerTower.x - playerTower.width / 2,
+                playerTower.y - playerTower.height / 2 - 15,
+                (game.playerHP / 100) * playerTower.width,
+                6
+            );
             ctx.strokeStyle = '#000';
             ctx.lineWidth = 2;
-            ctx.strokeRect(playerTower.x - 30, playerTower.y - 50, 60, 6);
+            ctx.strokeRect(
+                playerTower.x - playerTower.width / 2,
+                playerTower.y - playerTower.height / 2 - 15,
+                playerTower.width,
+                6
+            );
 
-            // Enemy Tower
+            // Enemy Tower (Red)
             ctx.fillStyle = enemyTower.color;
-            ctx.fillRect(enemyTower.x - 30, enemyTower.y - 40, 60, 80);
-            ctx.font = 'bold 24px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('🍄', enemyTower.x, enemyTower.y - 10);
+            ctx.fillRect(
+                enemyTower.x - enemyTower.width / 2,
+                enemyTower.y - enemyTower.height / 2,
+                enemyTower.width,
+                enemyTower.height
+            );
 
-            // Tower HP bar
+            // Tower border
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(
+                enemyTower.x - enemyTower.width / 2,
+                enemyTower.y - enemyTower.height / 2,
+                enemyTower.width,
+                enemyTower.height
+            );
+
+            // Enemy Tower HP bar
             ctx.fillStyle = '#00FF00';
-            ctx.fillRect(enemyTower.x - 30, enemyTower.y - 50, (game.enemyHP / 100) * 60, 6);
+            ctx.fillRect(
+                enemyTower.x - enemyTower.width / 2,
+                enemyTower.y - enemyTower.height / 2 - 15,
+                (game.enemyHP / 100) * enemyTower.width,
+                6
+            );
             ctx.strokeStyle = '#000';
             ctx.lineWidth = 2;
-            ctx.strokeRect(enemyTower.x - 30, enemyTower.y - 50, 60, 6);
+            ctx.strokeRect(
+                enemyTower.x - enemyTower.width / 2,
+                enemyTower.y - enemyTower.height / 2 - 15,
+                enemyTower.width,
+                6
+            );
         }
 
         // Spawn Enemy Units
@@ -555,7 +696,7 @@
             if (game.gameOver) return;
             if (Math.random() < 0.6) {
                 const type = Math.random() < 0.6 ? enemyUnitTypes[1] : enemyUnitTypes[2];
-                enemyUnits.push(new Unit(850, 300, type, false));
+                enemyUnits.push(new Unit(canvas.width - 80, canvas.height / 2, type, false));
             }
         }
 
@@ -563,8 +704,12 @@
         function updateStats() {
             document.getElementById('playerHP').textContent = Math.max(0, game.playerHP);
             document.getElementById('enemyHP').textContent = Math.max(0, game.enemyHP);
-            document.getElementById('manaDisplay').textContent = `💎 Mana: ${game.playerMana} / ${game.maxMana}`;
+            document.getElementById('manaValue').textContent = game.playerMana;
             document.getElementById('timer').textContent = Math.max(0, game.timeLeft);
+            document.getElementById('unitCount').textContent = playerUnits.length + enemyUnits.length;
+
+            const missileBtn = document.getElementById('missileBtn');
+            missileBtn.disabled = game.playerMana < 1 || game.gameOver;
         }
 
         // Create Cards
@@ -572,12 +717,12 @@
             const container = document.getElementById('cardContainer');
             container.innerHTML = '';
 
-            for (let i = 1; i <= 5; i++) {
+            for (let i = 1; i <= 4; i++) {
                 const unit = unitTypes[i];
                 const btn = document.createElement('button');
                 btn.className = 'card';
                 btn.id = `card-${i}`;
-                btn.innerHTML = `<span class="card-name">${unit.name}</span><br><span class="card-cost">${unit.cost} 💎</span><div class="card-cooldown"><div class="card-cooldown-bar"></div></div>`;
+                btn.innerHTML = `<span class="card-name">${unit.name}</span><br><span class="card-cost">${unit.cost}</span>`;
                 btn.onclick = () => spawnPlayerUnit(i);
                 container.appendChild(btn);
             }
@@ -588,7 +733,7 @@
             const unit = unitTypes[cardId];
             if (game.playerMana >= unit.cost && !game.gameOver) {
                 game.playerMana -= unit.cost;
-                playerUnits.push(new Unit(100, 300, unit, true));
+                playerUnits.push(new Unit(80, canvas.height / 2, unit, true));
                 updateStats();
             }
         }
@@ -600,8 +745,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // Draw background
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-            ctx.fillRect(0, 0, canvas.width / 2, canvas.height);
+            drawBackground();
 
             // Draw towers
             drawTowers();
@@ -638,10 +782,14 @@
                     proj.x += Math.cos(angle) * proj.speed;
                     proj.y += Math.sin(angle) * proj.speed;
 
+                    // Draw projectile
                     ctx.fillStyle = '#FFD700';
                     ctx.beginPath();
-                    ctx.arc(proj.x, proj.y, 4, 0, Math.PI * 2);
+                    ctx.arc(proj.x, proj.y, 5, 0, Math.PI * 2);
                     ctx.fill();
+                    ctx.strokeStyle = '#FFA500';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
                 }
             });
 
@@ -683,7 +831,7 @@
             stats.innerHTML = `
                 <p>Your Tower HP: ${Math.max(0, game.playerHP)}</p>
                 <p>Enemy Tower HP: ${Math.max(0, game.enemyHP)}</p>
-                <p>Units Defeated: ${playerUnits.length + enemyUnits.length}</p>
+                <p>Time Survived: ${180 - game.timeLeft}s</p>
             `;
 
             modal.classList.add('show');
@@ -705,6 +853,15 @@
                 spawnEnemyUnit();
             }
         }, 2000);
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            playerTower.y = canvas.height / 2;
+            enemyTower.x = canvas.width - 30;
+            enemyTower.y = canvas.height / 2;
+        });
 
         // Initialize
         createCards();
